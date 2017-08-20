@@ -21,7 +21,7 @@
  S: <input id="S" type="range" min="0" max="255" step="1" oninput="ledSaturation(this.value);"/><br/>
  V: <input id="V" type="range" min="0" max="255" step="1" oninput="ledValue(this.value);" /><br/>
  W: <input id="W" type="range" min="0" max="1023" step="1" oninput="whiteLedValue(this.value);" /><br/> <br />
- 
+ Spd: <input id="T" type="range" min="0" max="1023" step="1" oninput="animationSpeedSet(this.value);" /><br/> <br />
   <button onclick="sleepTime(document.getElementById('sleepMinutes').value);">Sleep</button>: <input type="text" size="4" id="sleepMinutes" value="60"/><br /><br />
   
   <input id="Sleep" oninput="document.getElementById('sleepMinutes').value=this.value;" type="range" min="1" max="120" step="1" value="60"/><br/><br />
@@ -46,8 +46,7 @@ connection.onmessage = function (msg) {webEvent(msg);};
 console.log(text)
 console.log("IP value changed to:"+ipValue);
 }
-	
-
+		
 function ledWhite() {
 	var toSend = "a1";
 	connection.send(toSend); 
@@ -93,12 +92,17 @@ function ledValue(newValue) {
 function whiteLedValue(newValue) {
 	connection.send("e"+newValue); 
 };
+function animationSpeedSet(newValue){
+	connection.send("t"+newValue)
+}
+
 function webEvent(evt) {
         	if (evt.data.substring(0,1)=="H") {
         		document.getElementById('H').value=evt.data.substring(evt.data.indexOf("H")+1,evt.data.indexOf(",S")); 
         		document.getElementById('S').value=evt.data.substring(evt.data.indexOf("S")+1,evt.data.indexOf(",V"));
         		document.getElementById('V').value=evt.data.substring(evt.data.indexOf("V")+1,evt.data.indexOf(",W"));
-        		document.getElementById('W').value=evt.data.substring(evt.data.indexOf("W")+1,evt.data.indexOf(",F"));
+        		document.getElementById('W').value=evt.data.substring(evt.data.indexOf("W")+1,evt.data.indexOf(",T"));
+				document.getElementById('animationSpeed').value=evt.data.substring(evt.data.indexOf("T")+1,evt.data.indexOf(",F"));
 				document.getElementById('sleepMinutes').value=(avt.data.substring(evt.data.indexOf("F"),evt.data.length))/60;
    		
 

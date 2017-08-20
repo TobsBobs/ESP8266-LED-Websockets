@@ -5,37 +5,41 @@ WebSocketsServer webSocket = WebSocketsServer(81);
 extern void startSleepTimer(int);
 extern int getSleepTimerRemainingTime(void);
 extern void disableSleepTimer(void);
+extern int getAnimationSpeed(void);
+
+String getStatusString(void){
+  String message;
+  message.reserve(100);
+  message = "H" + String(myHue); 
+  message = message + ",S" + String(mySaturation);
+  message = message + ",V" + String(myValue);
+  message = message + ",W" + String(myWhiteLedValue);
+  message = message + ",T" + "0"; 
+  message = message + ",F" + String(getSleepTimerRemainingTime()); //Sends a string with the HSV and white led  values to the client website when the conection gets established
+  return message;
+}
 
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t lenght) {
 
     switch(type) {
         case WStype_DISCONNECTED:
-  //          USE_SERIAL.printf("[%u] Disconnected!\n", num);
+            USE_SERIAL.printf("[%u] Disconnected!\n", num);
             break;
         case WStype_CONNECTED:
             {
                 IPAddress ip = webSocket.remoteIP(num);
- //               USE_SERIAL.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
+                USE_SERIAL.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
         
         // send message to client
-        String websocketStatusMessage = "H" + String(myHue) + ",S" + String(mySaturation) + ",V" + String(myValue) + ",W" + String(myWhiteLedValue) + ",F" + String(getSleepTimerRemainingTime()); //Sends a string with the HSV and white led  values to the client website when the conection gets established
-        webSocket.sendTXT(num, websocketStatusMessage);
+//        String aMessage = getStatusString();
+//        webSocket.sendTXT(num, aMessage);
         
-        String info = ESP.getResetInfo();
-        webSocket.sendTXT(num, info); //Handy for debugging
+//        String info = ESP.getResetInfo();
+//        webSocket.sendTXT(num, info); //Handy for debugging
 			}
         break;
         case WStype_TEXT:
             {
-  //            USE_SERIAL.printf("[%u] get Text: %s\n", num, payload);
-            
-
-            // send message to client
-            // webSocket.sendTXT(num, "message here");
-
-            // send data to all connected clients
-            // webSocket.broadcastTXT("message here");
-
             String text = String((char *) &payload[0]);
               if (text.startsWith("f")) {
                 String fStrVal = (text.substring(text.indexOf("f") + 1, text.length()));
@@ -94,13 +98,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t lenght
                 eepromCommitted = false;
                 }
              }
-             /*currentTime = millis();
-              if (currentTime - previousTime > 1000) {
-                String websocketStatusMessage = "H" + String(myHue) + ",S" + String(mySaturation) + ",V" + String(myValue);
-                webSocket.broadcastTXT(websocketStatusMessage);
-                previousTime = currentTime;
-               }*/
-            break;
+             break;
             }
         case WStype_BIN:
             //USE_SERIAL.printf("[%u] get binary lenght: %u\n", num, lenght);

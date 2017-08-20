@@ -9,6 +9,7 @@ int step = -1;
 int maxSteps = 16;
 float fadeRate = 0.8;
 int diff;
+const int NUM_LEDS = 60;
 
 //background color
 uint32_t currentBg = random(256);
